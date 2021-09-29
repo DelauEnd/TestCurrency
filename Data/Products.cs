@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 
 namespace TestCurrency.Data
 {
-    //TODO: Нахуй все снести и переделать
     public class Products
     {
         [Key]

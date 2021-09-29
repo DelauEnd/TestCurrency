@@ -35,7 +35,7 @@ namespace TestCurrency.Controllers
             return await db.Categories.Include(x=>x.Products).ToListAsync();
         }
 
-        [HttpGet("{id}")] // GET api/prod/
+        [HttpGet("{id}")]
         public async Task<ActionResult<Categories>> Get(int id)
         {
             Categories prod = await db.Categories.Include(x => x.Products).FirstOrDefaultAsync(x => x.CategoriesId == id);
@@ -44,8 +44,17 @@ namespace TestCurrency.Controllers
             return new ObjectResult(prod);
         }
 
+        [HttpGet]
+        [Route("search/{title}")]
+        public async Task<ActionResult<IEnumerable<Categories>>> Search(string title)
+        {
+            var catList = await db.Categories.Include(x => x.Products).Where(x => x.Title.ToLower().Contains(title.ToLower())).ToListAsync();
+            if (catList.Count == 0)
+                return NotFound();
+            return catList;
+        }
 
-        [HttpPost] // POST api/prod/
+        [HttpPost]
         public async Task<ActionResult<Categories>> Post(Categories prod)
         {
             if (prod == null)
@@ -58,7 +67,6 @@ namespace TestCurrency.Controllers
             return Ok(prod);
         }
 
-        // PUT api/prod/
         [HttpPut]
         public async Task<ActionResult<Categories>> Put(Categories prod)
         {
@@ -76,7 +84,6 @@ namespace TestCurrency.Controllers
             return Ok(prod);
         }
 
-        // DELETE api/users/5
         [HttpDelete("{id}")]
         public async Task<ActionResult<Categories>> Delete(int id)
         {

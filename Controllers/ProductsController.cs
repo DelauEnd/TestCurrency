@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using TestCurrency.Data;
+using TestCurrency.Handlers;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -33,8 +34,18 @@ namespace TestCurrency.Controllers
         {
             return await db.Products.Include(x=>x.Category).ToListAsync();
         }
-        
-        [HttpGet("{id}")] // GET api/prod/
+
+        [HttpGet]
+        [Route("search/{title}")]
+        public async Task<ActionResult<IEnumerable<Products>>> Search(string title)
+        {
+            var prodList = await db.Products.Include(x => x.Category).Where(x => x.Title.ToLower().Contains(title.ToLower())).ToListAsync();
+            if (prodList.Count == 0)
+                return NotFound();
+            return prodList;
+        }
+
+        [HttpGet("{id}")]
         public async Task<ActionResult<Products>> Get(int id)
         {
             Products prod = await db.Products.Include(x => x.Category).FirstOrDefaultAsync(x => x.ProductsId == id);
@@ -43,8 +54,24 @@ namespace TestCurrency.Controllers
             return new ObjectResult(prod);
         }
 
-        
-        [HttpPost] // POST api/prod/
+        //TODO: Сделать вывод с переводом цены в другую валюту + новый класс товара с названием валюты и переведенным значением
+        [HttpGet]
+        [Route("{id}/convert/{currency}")]//my apiKey: 549f67dd2bb6aa79160f
+        public async Task<ActionResult<ConvertedProducts>> convert(int id, string currency, string apiKey)
+        {
+            const string oldCurrency = "BYN";
+
+            Products prod = await db.Products.Include(x => x.Category).FirstOrDefaultAsync(x => x.ProductsId == id);
+            if (prod == null)
+                return NotFound();
+
+            var convProd = await CurrencyHandler.AsyncConvertPrice(prod, oldCurrency, currency, apiKey);
+            if (convProd == null)
+                return BadRequest();
+            return convProd;
+        }
+
+        [HttpPost]
         public async Task<ActionResult<Products>> Post(Products prod)
         {
             if (prod == null)
@@ -57,7 +84,6 @@ namespace TestCurrency.Controllers
             return Ok(prod);
         }
 
-        // PUT api/prod/
         [HttpPut]
         public async Task<ActionResult<Products>> Put(Products prod)
         {
@@ -75,7 +101,6 @@ namespace TestCurrency.Controllers
             return Ok(prod);
         }
 
-        // DELETE api/users/5
         [HttpDelete("{id}")]
         public async Task<ActionResult<Products>> Delete(int id)
         {
