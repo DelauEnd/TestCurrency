@@ -29,7 +29,10 @@ namespace TestCurrency.Handlers
         public float GetCurrencyValue(string from, string to, string apiKey)
         {
             var jsonString = web.DownloadString($"https://free.currconv.com/api/v7/convert?compact=y&q={from}_{to}&apiKey={apiKey}");
-            return (float)JObject.Parse(jsonString).First.First["val"].ToObject<double>();
+            var res = JObject.Parse(jsonString).First;
+            if (res == null)
+                return 0;
+            return (float)res.First["val"].ToObject<double>();
         }
     }
 }

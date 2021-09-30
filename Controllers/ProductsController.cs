@@ -101,6 +101,23 @@ namespace TestCurrency.Controllers
             return Ok(prod);
         }
 
+        [HttpPatch]
+        [Route("priceupdate/{title}")]
+        public async Task<ActionResult<Categories>> Patch(int id, float Cost)
+        {
+            Products prod = await db.Products.FirstOrDefaultAsync(x => x.ProductsId == id);
+            if (prod == null)
+            {
+                return NotFound();
+            }
+
+            prod.Cost = Cost;
+
+            db.Update(prod);
+            await db.SaveChangesAsync();
+            return Ok(prod);
+        }
+
         [HttpDelete("{id}")]
         public async Task<ActionResult<Products>> Delete(int id)
         {

@@ -19,6 +19,9 @@ namespace TestCurrency.Controllers
         [HttpGet] 
         public async Task<ActionResult<IEnumerable<Currency>>> Get(string apiKey)
         {
+            var curList = await CurrencyHandler.AsyncGetCurrencyList(apiKey);
+            if (curList == null)
+                return BadRequest();
             return await CurrencyHandler.AsyncGetCurrencyList(apiKey);
         }
 
@@ -26,6 +29,8 @@ namespace TestCurrency.Controllers
         public async Task<ActionResult<Currency>> Get(string title,string apiKey)
         {
             var curList = await CurrencyHandler.AsyncGetCurrencyList(apiKey);
+            if (curList == null)
+                return BadRequest();
             Currency cur = curList.FirstOrDefault(x => x.id == title);
             if (cur == null)
                 return NotFound();

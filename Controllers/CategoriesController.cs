@@ -38,10 +38,10 @@ namespace TestCurrency.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Categories>> Get(int id)
         {
-            Categories prod = await db.Categories.Include(x => x.Products).FirstOrDefaultAsync(x => x.CategoriesId == id);
-            if (prod == null)
+            Categories categ = await db.Categories.Include(x => x.Products).FirstOrDefaultAsync(x => x.CategoriesId == id);
+            if (categ == null)
                 return NotFound();
-            return new ObjectResult(prod);
+            return new ObjectResult(categ);
         }
 
         [HttpGet]
@@ -55,46 +55,46 @@ namespace TestCurrency.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<Categories>> Post(Categories prod)
+        public async Task<ActionResult<Categories>> Post(Categories categ)
         {
-            if (prod == null)
+            if (categ == null)
             {
                 return BadRequest();
             }
 
-            db.Categories.Add(prod);
+            db.Categories.Add(categ);
             await db.SaveChangesAsync();
-            return Ok(prod);
+            return Ok(categ);
         }
 
         [HttpPut]
-        public async Task<ActionResult<Categories>> Put(Categories prod)
+        public async Task<ActionResult<Categories>> Put(Categories categ)
         {
-            if (prod == null)
+            if (categ == null)
             {
                 return BadRequest();
             }
-            if (!db.Categories.Any(x => x.CategoriesId == prod.CategoriesId))
+            if (!db.Categories.Any(x => x.CategoriesId == categ.CategoriesId))
             {
                 return NotFound();
             }
 
-            db.Update(prod);
+            db.Update(categ);
             await db.SaveChangesAsync();
-            return Ok(prod);
+            return Ok(categ);
         }
 
         [HttpDelete("{id}")]
         public async Task<ActionResult<Categories>> Delete(int id)
         {
-            Categories prod = db.Categories.FirstOrDefault(x => x.CategoriesId == id);
-            if (prod == null)
+            Categories categ = db.Categories.FirstOrDefault(x => x.CategoriesId == id);
+            if (categ == null)
             {
                 return NotFound();
             }
-            db.Categories.Remove(prod);
+            db.Categories.Remove(categ);
             await db.SaveChangesAsync();
-            return Ok(prod);
+            return Ok(categ);
         }
     }
 }
