@@ -10,7 +10,7 @@ namespace TestCurrency.Handlers
     {
         public static async Task<List<Currency>> AsyncGetCurrencyList(string apiKey)
         {
-            if (apiKey == "")
+            if (apiKey == "" || apiKey == null)
                 return null;
             RequestHandler rh = new RequestHandler();
             return await Task.Run(() => rh.GetCurrencyList((apiKey)));
@@ -18,7 +18,7 @@ namespace TestCurrency.Handlers
 
         public static async Task<ConvertedProducts> AsyncConvertPrice(Products prod, string from, string to, string apiKey)
         {
-            if (apiKey == "")
+            if (apiKey == "" || apiKey == null)
                 return null;
             RequestHandler rh = new RequestHandler();
             float multiplier = await Task.Run(() => rh.GetCurrencyValue(from,to,apiKey));
