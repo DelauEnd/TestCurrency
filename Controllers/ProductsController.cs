@@ -44,7 +44,7 @@ namespace TestCurrency.Controllers
         [Route("search/{title}")]
         public async Task<ActionResult<IEnumerable<Products>>> Search(string title)
         {
-            var prodList = await db.Products.Include(x => x.Category).Where(x => x.Title.ToLower().Contains(title.ToLower())).ToListAsync();
+            var prodList = await db.Products.Where(x => x.Title.ToLower().Contains(title.ToLower())).ToListAsync();
             if (prodList.Count == 0)
                 return NotFound();
             return prodList;
@@ -104,14 +104,18 @@ namespace TestCurrency.Controllers
                 return NotFound();
             }
 
-            db.Update(prod);
+            var newProd = db.Products.FirstOrDefault(x=>x.ProductsId == prod.ProductsId);
+            newProd.CategoryId = prod.CategoryId;
+            newProd.Title = prod.Title;
+            newProd.Cost = prod.Cost;
+
             await db.SaveChangesAsync();
             return Ok(prod);
         }
 
         [Authorize(Roles = UserRoles.admin)]
         [HttpPatch]
-        [Route("priceupdate/{title}")]
+        [Route("priceupdate/{id}")]
         public async Task<ActionResult<Categories>> Patch(int id, float Cost)
         {
             Products prod = await db.Products.FirstOrDefaultAsync(x => x.ProductsId == id);

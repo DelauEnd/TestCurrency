@@ -53,7 +53,7 @@ namespace TestCurrency.Controllers
         [Route("search/{title}")]
         public async Task<ActionResult<IEnumerable<Categories>>> Search(string title)
         {
-            var catList = await db.Categories.Include(x => x.Products).Where(x => x.Title.ToLower().Contains(title.ToLower())).ToListAsync();
+            var catList = await db.Categories.Where(x => x.Title.ToLower().Contains(title.ToLower())).ToListAsync();
             if (catList.Count == 0)
                 return NotFound();
             return catList;
@@ -86,7 +86,6 @@ namespace TestCurrency.Controllers
                 return NotFound();
             }
 
-            db.Update(categ);
             await db.SaveChangesAsync();
             return Ok(categ);
         }
