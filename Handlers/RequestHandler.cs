@@ -11,7 +11,7 @@ namespace TestCurrency.Handlers
     public class RequestHandler
     {
         WebClient web;
-        readonly string USER_AGENT = "Mozilla / 5.0(Windows NT 10.0; Win64; x64) AppleWebKit / 537.36(KHTML, like Gecko) Chrome / 90.0.4430.41 YaBrowser / 21.5.0.579 Yowser / 2.5 Safari / 537.36"
+        readonly string USER_AGENT = "Mozilla / 5.0(Windows NT 10.0; Win64; x64) AppleWebKit / 537.36(KHTML, like Gecko) Chrome / 90.0.4430.41 YaBrowser / 21.5.0.579 Yowser / 2.5 Safari / 537.36";
         readonly string DOMEN = "https://free.currconv.com/api/v7/";
 
         public RequestHandler()
