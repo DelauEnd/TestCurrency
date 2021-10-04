@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.Contracts;
@@ -15,6 +16,7 @@ namespace TestCurrency.Data
         public float Cost { get; set; }
 
         public int? CategoryId { get; set; }
+        [JsonIgnore]
         public Categories Category { get; set; }
     }
 } 
