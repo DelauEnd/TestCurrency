@@ -9,8 +9,6 @@ using System.Threading;
 using Microsoft.AspNetCore.Authorization;
 using TestCurrency.Authentication;
 
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-
 namespace TestCurrency.Controllers
 {
     [Authorize]
@@ -31,14 +29,14 @@ namespace TestCurrency.Controllers
                 db.SaveChanges();
             }
         }
-        [Authorize(Roles = UserRoles.user + "," + UserRoles.admin)]
+        [Authorize(Roles = nameof(UserRoles.USER) + "," + nameof(UserRoles.ADMIN))]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Categories>>> Get()
         {
             return await db.Categories.Include(x=>x.Products).ToListAsync();
         }
 
-        [Authorize(Roles = UserRoles.user + "," + UserRoles.admin)]
+        [Authorize(Roles = nameof(UserRoles.USER) + "," + nameof(UserRoles.ADMIN))]
         [HttpGet("{id}")]
         public async Task<ActionResult<Categories>> Get(int id)
         {
@@ -48,7 +46,7 @@ namespace TestCurrency.Controllers
             return new ObjectResult(categ);
         }
 
-        [Authorize(Roles = UserRoles.user + "," + UserRoles.admin)]
+        [Authorize(Roles = nameof(UserRoles.USER) + "," + nameof(UserRoles.ADMIN))]
         [HttpGet]
         [Route("search/{title}")]
         public async Task<ActionResult<IEnumerable<Categories>>> Search(string title)
@@ -59,7 +57,7 @@ namespace TestCurrency.Controllers
             return catList;
         }
 
-        [Authorize(Roles = UserRoles.admin)]
+        [Authorize(Roles = nameof(UserRoles.ADMIN))]
         [HttpPost]
         public async Task<ActionResult<Categories>> Post(Categories categ)
         {
@@ -73,7 +71,7 @@ namespace TestCurrency.Controllers
             return Ok(categ);
         }
 
-        [Authorize(Roles = UserRoles.admin)]
+        [Authorize(Roles = nameof(UserRoles.ADMIN))]
         [HttpPut]
         public async Task<ActionResult<Categories>> Put(Categories categ)
         {
@@ -90,7 +88,7 @@ namespace TestCurrency.Controllers
             return Ok(categ);
         }
 
-        [Authorize(Roles = UserRoles.admin)]
+        [Authorize(Roles = nameof(UserRoles.ADMIN))]
         [HttpDelete("{id}")]
         public async Task<ActionResult<Categories>> Delete(int id)
         {

@@ -5,9 +5,9 @@ using System.Threading.Tasks;
 
 namespace TestCurrency.Authentication
 {
-    public class UserRoles
+    public enum UserRoles
     {
-        public const string user = "User";
-        public const string admin = "Admin";
+       USER,
+       ADMIN
     }
 }

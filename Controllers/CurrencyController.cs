@@ -10,8 +10,6 @@ using TestCurrency.Authentication;
 using TestCurrency.Data;
 using TestCurrency.Handlers;
 
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-
 namespace TestCurrency.Controllers
 {
     [Authorize]
@@ -19,7 +17,7 @@ namespace TestCurrency.Controllers
     [Route("api/[controller]")]
     public class CurrencyController : Controller//my apiKey: 549f67dd2bb6aa79160f
     {
-        [Authorize(Roles = UserRoles.user + "," + UserRoles.admin)]
+        [Authorize(Roles = nameof(UserRoles.USER) + "," + nameof(UserRoles.ADMIN))]
         [HttpGet] 
         public async Task<ActionResult<IEnumerable<Currency>>> Get(string apiKey)
         {
@@ -29,7 +27,7 @@ namespace TestCurrency.Controllers
             return await CurrencyHandler.AsyncGetCurrencyList(apiKey);
         }
 
-        [Authorize(Roles = UserRoles.user + "," + UserRoles.admin)]
+        [Authorize(Roles = nameof(UserRoles.USER) + "," + nameof(UserRoles.ADMIN))]
         [HttpGet("{title}")]
         public async Task<ActionResult<Currency>> Get(string title,string apiKey)
         {

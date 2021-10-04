@@ -9,8 +9,6 @@ using TestCurrency.Authentication;
 using TestCurrency.Data;
 using TestCurrency.Handlers;
 
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-
 namespace TestCurrency.Controllers
 {
     [Authorize]
@@ -32,14 +30,14 @@ namespace TestCurrency.Controllers
             } 
         }
 
-        [Authorize(Roles = UserRoles.user + "," + UserRoles.admin)]
+        [Authorize(Roles = nameof(UserRoles.USER) + "," + nameof(UserRoles.ADMIN))]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Products>>> Get()
         {
             return await db.Products.Include(x=>x.Category).ToListAsync();
         }
 
-        [Authorize(Roles = UserRoles.user + "," + UserRoles.admin)]
+        [Authorize(Roles = nameof(UserRoles.USER) + "," + nameof(UserRoles.ADMIN))]
         [HttpGet]
         [Route("search/{title}")]
         public async Task<ActionResult<IEnumerable<Products>>> Search(string title)
@@ -50,7 +48,7 @@ namespace TestCurrency.Controllers
             return prodList;
         }
 
-        [Authorize(Roles = UserRoles.user + "," + UserRoles.admin)]
+        [Authorize(Roles = nameof(UserRoles.USER) + "," + nameof(UserRoles.ADMIN))]
         [HttpGet("{id}")]
         public async Task<ActionResult<Products>> Get(int id)
         {
@@ -60,7 +58,7 @@ namespace TestCurrency.Controllers
             return new ObjectResult(prod);
         }
 
-        [Authorize(Roles = UserRoles.user + "," + UserRoles.admin)]
+        [Authorize(Roles = nameof(UserRoles.USER) + "," + nameof(UserRoles.ADMIN))]
         [HttpGet]
         [Route("{id}/convert/{currency}")]//my apiKey: 549f67dd2bb6aa79160f
         public async Task<ActionResult<ConvertedProducts>> convert(int id, string currency, string apiKey)
@@ -77,7 +75,7 @@ namespace TestCurrency.Controllers
             return convProd;
         }
 
-        [Authorize(Roles = UserRoles.admin)]
+        [Authorize(Roles = nameof(UserRoles.ADMIN))]
         [HttpPost]
         public async Task<ActionResult<Products>> Post(Products prod)
         {
@@ -91,7 +89,7 @@ namespace TestCurrency.Controllers
             return Ok(prod);
         }
 
-        [Authorize(Roles = UserRoles.admin)]
+        [Authorize(Roles = nameof(UserRoles.ADMIN))]
         [HttpPut]
         public async Task<ActionResult<Products>> Put(Products prod)
         {
@@ -113,7 +111,7 @@ namespace TestCurrency.Controllers
             return Ok(prod);
         }
 
-        [Authorize(Roles = UserRoles.admin)]
+        [Authorize(Roles = nameof(UserRoles.ADMIN))]
         [HttpPatch]
         [Route("priceupdate/{id}")]
         public async Task<ActionResult<Categories>> Patch(int id, float Cost)
@@ -131,7 +129,7 @@ namespace TestCurrency.Controllers
             return Ok(prod);
         }
 
-        [Authorize(Roles = UserRoles.admin)]
+        [Authorize(Roles = nameof(UserRoles.ADMIN))]
         [HttpDelete("{id}")]
         public async Task<ActionResult<Products>> Delete(int id)
         {

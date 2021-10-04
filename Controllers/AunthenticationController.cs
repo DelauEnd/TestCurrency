@@ -32,7 +32,7 @@ namespace TestCurrency.Controllers
 
         [HttpPost]
         [Route("register")]
-        public async Task<IActionResult> RegisterUser([FromBody] RegisterModel model)
+        public async Task<IActionResult> Register([FromBody] RegisterModel model)
         {
             var userExist = await userManager.FindByNameAsync(model.UserName);
             if (userExist != null)
@@ -46,37 +46,17 @@ namespace TestCurrency.Controllers
             var result = await userManager.CreateAsync(user, model.Password);
             if (!result.Succeeded)
                 return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "Error", Message = "Error" });
-
-            if (!await roleManager.RoleExistsAsync(UserRoles.user))
-                await roleManager.CreateAsync(new IdentityRole(UserRoles.user));
-            await userManager.AddToRoleAsync(user, UserRoles.user);
-
-
-            return Ok(new Response { Status = "success",Message = "Created successfull"});
-        }
-
-        [HttpPost]
-        [Route("registerAdmin")]
-        public async Task<IActionResult> RegisterAdmin([FromBody] RegisterModel model)
-        {
-            var userExist = await userManager.FindByNameAsync(model.UserName);
-            if (userExist != null)
-                return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "Error", Message = "Admin already exist" });
-            ApplicationUser user = new ApplicationUser()
-            {
-                Email = model.Email,
-                SecurityStamp = Guid.NewGuid().ToString(),
-                UserName = model.UserName
-            };
-            var result = await userManager.CreateAsync(user, model.Password);
-            if (!result.Succeeded)
-                return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "Error", Message = "Error" });
            
-            if (!await roleManager.RoleExistsAsync(UserRoles.admin))
-                await roleManager.CreateAsync(new IdentityRole(UserRoles.admin));
-            await userManager.AddToRoleAsync(user, UserRoles.admin);
+            if (!Enum.IsDefined(typeof(UserRoles), model.Role.ToUpper()))
+                return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "Error", Message = "Incorrect user role" });
 
-            return Ok(new Response { Status = "success", Message = "Admin created successfull" });
+            var userRole = model.Role.ToUpper();
+
+            if (!await roleManager.RoleExistsAsync(userRole))
+                await roleManager.CreateAsync(new IdentityRole(userRole));
+            await userManager.AddToRoleAsync(user, userRole);
+
+            return Ok(new Response { Status = "success",Message = $"{userRole} сreated successfull"});
         }
 
         [HttpPost]
