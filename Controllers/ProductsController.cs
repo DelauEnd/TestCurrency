@@ -1,10 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using TestCurrency.Authentication;
 using TestCurrency.Data;
 using TestCurrency.Handlers;
@@ -16,24 +17,21 @@ namespace TestCurrency.Controllers
     [Route("api/[controller]")]
     public class ProductsController : Controller
     {
-        ProductsDBContext db;
-        public ProductsController(ProductsDBContext context)
+        private ProductsDBContext db;
+        private readonly IConfiguration config;
+
+        public ProductsController(ProductsDBContext context, IConfiguration config)
         {
+            this.config = config;
             db = context;
-            if (!db.Products.Any())
-            {
-                var cat = new Categories { Title = "Кат1" };
-                db.Categories.Add(cat);
-                db.SaveChanges();
-                db.Products.Add(new Products { Title = "Товар1", Cost = 0.99f, CategoryId=1});
-                db.SaveChanges();
-            } 
         }
 
         [Authorize(Roles = nameof(UserRoles.USER) + "," + nameof(UserRoles.ADMIN))]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Products>>> Get()
         {
+            if (!db.Products.Any())
+                return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "Error", Message = "Products table is empty" });
             return await db.Products.Include(x=>x.Category).ToListAsync();
         }
 
@@ -60,16 +58,18 @@ namespace TestCurrency.Controllers
 
         [Authorize(Roles = nameof(UserRoles.USER) + "," + nameof(UserRoles.ADMIN))]
         [HttpGet]
-        [Route("{id}/convert/{currency}")]//my apiKey: 549f67dd2bb6aa79160f
-        public async Task<ActionResult<ConvertedProducts>> convert(int id, string currency, string apiKey)
+        [Route("{id}/convert/{currency}")]
+        public async Task<ActionResult<ConvertedProducts>> convert(int id, string currency)
         {
-            const string oldCurrency = "BYN";
+            const string baseCurrency = "BYN";
 
             Products prod = await db.Products.Include(x => x.Category).FirstOrDefaultAsync(x => x.ProductsId == id);
             if (prod == null)
                 return NotFound();
+            
+            string apiKey = CurrencyHandler.GetCurrencyApiKey(config);
 
-            var convProd = await CurrencyHandler.AsyncConvertPrice(prod, oldCurrency, currency, apiKey);
+            var convProd = await CurrencyHandler.AsyncConvertPrice(prod, baseCurrency, currency, apiKey);
             if (convProd == null)
                 return BadRequest();
             return convProd;

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Extensions.Configuration;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -28,11 +29,16 @@ namespace TestCurrency.Handlers
             {
                 ProductsId = prod.ProductsId,
                 Title = prod.Title,
-                OldCurrency = from,
+                BaseCurrency = from,
                 Cost = prod.Cost,
                 Currency = to,
                 ConvertedCost = prod.Cost * multiplier                  
             };
+        }
+
+        public static string GetCurrencyApiKey(IConfiguration config)
+        {
+            return config["CurrencyApi:ApiKey"];
         }
     }
 }

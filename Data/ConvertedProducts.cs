@@ -9,7 +9,7 @@ namespace TestCurrency.Data
     {
         public int ProductsId { get; set; }
         public string Title { get; set; }
-        public string OldCurrency { get; set; }
+        public string BaseCurrency { get; set; }
         public float Cost { get; set; }
         public string Currency { get; set; }
         public float ConvertedCost { get; set; }

@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using TestCurrency.Authentication;
 using TestCurrency.Data;
 using TestCurrency.Handlers;
@@ -17,10 +18,19 @@ namespace TestCurrency.Controllers
     [Route("api/[controller]")]
     public class CurrencyController : Controller//my apiKey: 549f67dd2bb6aa79160f
     {
+        private readonly IConfiguration config;
+
+        public CurrencyController(IConfiguration config)
+        {
+            this.config = config;
+        }
+
         [Authorize(Roles = nameof(UserRoles.USER) + "," + nameof(UserRoles.ADMIN))]
         [HttpGet] 
-        public async Task<ActionResult<IEnumerable<Currency>>> Get(string apiKey)
+        public async Task<ActionResult<IEnumerable<Currency>>> Get()
         {
+            string apiKey = CurrencyHandler.GetCurrencyApiKey(config);
+
             var curList = await CurrencyHandler.AsyncGetCurrencyList(apiKey);
             if (curList == null)
                 return BadRequest();
@@ -29,8 +39,10 @@ namespace TestCurrency.Controllers
 
         [Authorize(Roles = nameof(UserRoles.USER) + "," + nameof(UserRoles.ADMIN))]
         [HttpGet("{title}")]
-        public async Task<ActionResult<Currency>> Get(string title,string apiKey)
+        public async Task<ActionResult<Currency>> Get(string title)
         {
+            string apiKey = CurrencyHandler.GetCurrencyApiKey(config);
+
             var curList = await CurrencyHandler.AsyncGetCurrencyList(apiKey);
             if (curList == null)
                 return BadRequest();

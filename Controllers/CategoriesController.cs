@@ -1,13 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using TestCurrency.Data;
-using System.Threading;
 using Microsoft.AspNetCore.Authorization;
 using TestCurrency.Authentication;
+using Microsoft.AspNetCore.Http;
 
 namespace TestCurrency.Controllers
 {
@@ -16,7 +15,8 @@ namespace TestCurrency.Controllers
     [Route("api/[controller]")]
     public class CategoriesController : Controller
     {
-        ProductsDBContext db;
+        private ProductsDBContext db;
+
         public CategoriesController(ProductsDBContext context)
         {
             db = context;
@@ -33,6 +33,8 @@ namespace TestCurrency.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Categories>>> Get()
         {
+            if (!db.Categories.Any())
+                return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "Error", Message = "Categories table is empty" });
             return await db.Categories.Include(x=>x.Products).ToListAsync();
         }
 
